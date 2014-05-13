@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ page.title }}</title>
-    <link rel="stylesheet" href="css/foundation.css" />
-    <link rel="stylesheet" href="css/app.css" />
-    <script src="js/vendor/modernizr.js"></script>
+    <link rel="stylesheet" href="{{ site.url }}/css/foundation.css" />
+    <link rel="stylesheet" href="{{ site.url }}/css/app.css" />
+    <script src="{{ site.url }}/js/vendor/modernizr.js"></script>
   </head>
   <body>
 
@@ -19,7 +19,7 @@
             <li {% if page.slug == "projects" %}class="active"{% endif %}><a href="#">Projects</a></li>
             <li {% if page.slug == "resume" %}class="active"{% endif %}><a href="#">Resume</a></li>
             <li {% if page.slug == "about" %}class="active"{% endif %}><a href="#">About/Contact</a></li>
-            <li {% if page.slug == "notes" %}class="active"{% endif %}><a href="#">Class notes</a></li>
+            <li {% if page.slug == "notes" %}class="active"{% endif %}><a href="{{ site.url }}/notes">Class notes</a></li>
             <li {% if page.slug == "etc" %}class="active"{% endif %}><a href="#">Etc.</a></li>
         </ul>
     </nav>
