@@ -2,6 +2,11 @@ body {
     background-color:#F8F8F8;
 }
 
+p {
+    font-family: Georgia, serif;
+    font-size:1.2em;
+}
+
 header {
     background-color: #1a547a;
     padding: 30px 0;
@@ -16,6 +21,10 @@ header .title {
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color:white;
+}
+
+nav {
+    margin-bottom:25px;
 }
 
 nav ul {
@@ -59,4 +68,39 @@ footer {
    display:block;
    padding-bottom:30px;
    padding-top:30px;
+}
+
+.project > a:first-child > img:first-child {
+    border-top: 1px solid rgba(0,0,0,0);
+}
+.project > a:first-child > img:first-child:hover {
+    border-top: 1px solid #1a547a;
+}
+.project span.tech {
+    text-align:right;
+    color:#666;
+    font-size:0.8em;
+    display:block;
+    margin-top:5px;
+}
+.project p {
+    font-size:0.9em;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding-top:10px;
+}
+.project .project-buttons {
+    text-align:center;
+}
+.project .button {
+    background-color: #ddd;
+    color: black;
+    margin: 0 0.3rem 1rem;
+    padding: 0.5rem 0.8rem;
+}
+.project .button:hover {
+    background-color: #ccc;
+}
+
+#linebreak textarea {
+    height: 12rem;
 }

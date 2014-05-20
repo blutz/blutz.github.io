@@ -1,0 +1,28 @@
+{% include header.html %}
+
+{{ content }}
+
+    <script src="{{ site.url }}/js/vendor/jquery.js"></script>
+    <script src="{{ site.url }}/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+
+    <script>
+        $('#linebreak-1').focus();
+        $('#linebreak-add').click(function(){
+            var from = $('#linebreak-1').val()
+            var to = from.replace(/\n/g,"\n\n");
+            $('#linebreak-2').val(to);
+            $('#linebreak-2').focus();
+        });
+        $('#linebreak-remove').click(function(){
+            var from = $('#linebreak-1').val()
+            var to = from.replace(/\n\n\n/g,"\n");
+            to = to.replace(/\n\n/g,"\n");
+            $('#linebreak-2').val(to);
+            $('#linebreak-2').select();
+        });
+    </script>
+
+{% include footer.html %}

@@ -16,11 +16,11 @@
 
     <nav>
         <ul>
-            <li {% if page.slug == "portfolio" %}class="active"{% endif %}><a href="#">Portfolio</a></li>
-            <li {% if page.slug == "resume" %}class="active"{% endif %}><a href="#">Resume</a></li>
-            <li {% if page.slug == "about" %}class="active"{% endif %}><a href="#">About/Contact</a></li>
+            <li {% if page.slug == "portfolio" %}class="active"{% endif %}><a href="{{ site.url }}">Portfolio</a></li>
+            <li {% if page.slug == "resume" %}class="active"{% endif %}><a href="{{ site.url }}/resume.pdf">Resume</a></li>
+            <li {% if page.slug == "contact" %}class="active"{% endif %}><a href="{{ site.url }}/contact">Contact</a></li>
             <li {% if page.slug == "notes" %}class="active"{% endif %}><a href="{{ site.url }}/notes">Class notes</a></li>
-            <li {% if page.slug == "etc" %}class="active"{% endif %}><a href="#">Etc.</a></li>
+            <li {% if page.slug == "etc" %}class="active"{% endif %}><a href="{{ site.url }}/etc">Etc.</a></li>
         </ul>
     </nav>
     <div style="display:block;clear:both"></div>
