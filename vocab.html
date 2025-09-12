@@ -1,0 +1,112 @@
+---
+title: "Firetek 096 Vocab"
+slug: vocab
+layout: empty
+published: true
+---
+
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<div id='app'><div>
+
+<script type='text/babel'>
+  const vocab = {
+    'dyspnea': 'Difficulty breathing; shortness of breath',
+    'tachypnea': 'Fast respiratory rate above 20 breaths/minute',
+    'myocardial infarction': 'Heart attack; death of cardiac muscle due to interruption of blood supply to the heart',
+    'tachycardia': 'Rapid heart rate above 100 beats/minute',
+    'bradycardia': 'Slow resting heart rate below 60 beats/minute',
+    'bradypnea': 'Slow respiratory rate below 12 breaths/minute',
+    'chronic obstructive pulmonary disease': 'The slow process of dilation and disruption of the airways and alveoli caused by chronic bronchiole obstruction',
+    'apnea': 'absence of spontaneous breathing',
+    'cerebral vascular accident': 'Stroke; interruption of blood flow to the brain resulting in loss of brain function',
+    'shock': 'Widespread inadequate tissue perfusion',
+    'aneurysm': 'A weakening of the blood vessel wall resulting in the enlargement or ballooning of the blood vessel wall',
+    'pneumothorax': 'Partial or complete accumulation of air in the pleural space',
+    'syncope': 'A fainting spell or transient loss of consciousness',
+    'altered mental status': 'Any deviation of baseline mental status; ranges from disorientation to complete unresponsiveness',
+    'cardiac tamponade': "Blood or fluid filling the pericardium and restricting the heart's ability to pump effectively",
+    'automated external defibrillator': 'A device that detects treatable life threatening cardiac arrhythmias (ventricular fibrillation & ventricular tachycardia) and delivers appropriate electrical shock',
+    'melena': 'Black, tarry smelly stool containing digested blood',
+    'chief complaint': 'The reason the patient called for help',
+    'diaphoretic': 'Light or profuse sweating',
+    'embolus': 'A blood clot that travels to a blood vessel where it causes a blockage of blood flow'
+  }
+  function normalize(str) {
+    return str.toLowerCase().split(' ').join('')
+  }
+  function Hint({word}) {
+    const [words, setWords] = React.useState(0)
+    const limit = React.useMemo(() => {
+      return vocab[word].split(' ').length
+    }, [word])
+    const hint = React.useMemo(() => {
+      return vocab[word].split(' ').slice(0, words).join(' ')
+    }, [word, words])
+    function handleClick(e) {
+      e.preventDefault()
+      if(words < limit) {
+        setWords(words+1)
+      }
+    }
+    return <div>
+      <a onClick={handleClick}>{words === limit ? '📚' : 'Hint'}</a>&nbsp;{hint}
+    </div>
+  }
+  function Word({word}) {
+    const [text, setText] = React.useState('')
+    const [matches, partialMatch] = React.useMemo(() => {
+      const normalizedAnswer = normalize(vocab[word])
+      const normalizedText = normalize(text)
+      return [
+        normalizedAnswer === normalizedText,
+        normalizedText === normalizedAnswer.substring(0, normalizedText.length)
+      ]
+    }, [text, word])
+    const inputStyle = {marginBottom: 0}
+    if(partialMatch) {
+      inputStyle.color = 'green'
+    } else {
+      inputStyle.color = 'red'
+    }
+    if(matches) {
+      inputStyle.backgroundColor = 'lightgreen'
+      inputStyle.color = 'black'
+    }
+    return <div className='small-12 columns'>
+      <strong>{word} {matches ? '✅' : '⛔️'}</strong>
+      <br />
+      <input type='text' value={text} onChange={e => setText(e.target.value)} style={inputStyle} />
+      <Hint word={word} />
+      <br />
+      <br />
+    </div>
+  }
+  // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+  // Shuffles in-place
+  function shuffle(array) {
+    let currentIndex = array.length;
+    while (currentIndex != 0) {
+      let randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    return array
+  }
+  function List() {
+    const [keys, setKeys] = React.useState(shuffle(Object.keys(vocab)))
+    return <div className='row'>
+      <div className='small-12 columns'>
+        <h2>Firetek 096 Vocab Quiz (Fall 2025, LAVC)</h2>
+      </div>
+      {keys.map(word =>
+        <Word key={word} word={word} />
+      )}
+    </div>
+  }
+  const root = ReactDOM.createRoot(document.getElementById('app'))
+  root.render(<List />)
+</script>
