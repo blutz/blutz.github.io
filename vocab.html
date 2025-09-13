@@ -34,9 +34,15 @@ published: true
     'diaphoretic': 'Light or profuse sweating',
     'embolus': 'A blood clot that travels to a blood vessel where it causes a blockage of blood flow'
   }
-  function normalize(str) {
-    return str.toLowerCase().split(' ').join('')
+  function normalize(str, removePunctuation) {
+    const ret = str.toLowerCase().split(' ').join('')
+    if(removePunctuation) {
+      return ret.replace(/[^0-9A-Z]+/gi,'')
+    } else {
+      return ret
+    }
   }
+  const SettingsContext = React.createContext(null)
   function Hint({word}) {
     const [words, setWords] = React.useState(0)
     const limit = React.useMemo(() => {
@@ -56,30 +62,33 @@ published: true
     </div>
   }
   function Word({word}) {
+    const {feedback, punctuation, reverse} = React.useContext(SettingsContext)
     const [text, setText] = React.useState('')
     const [matches, partialMatch] = React.useMemo(() => {
-      const normalizedAnswer = normalize(vocab[word])
-      const normalizedText = normalize(text)
+      const normalizedAnswer = normalize(reverse ? word : vocab[word], !punctuation)
+      const normalizedText = normalize(text, !punctuation)
       return [
         normalizedAnswer === normalizedText,
         normalizedText === normalizedAnswer.substring(0, normalizedText.length)
       ]
-    }, [text, word])
+    }, [text, word, punctuation, reverse])
     const inputStyle = {marginBottom: 0}
-    if(partialMatch) {
-      inputStyle.color = 'green'
-    } else {
-      inputStyle.color = 'red'
-    }
-    if(matches) {
-      inputStyle.backgroundColor = 'lightgreen'
-      inputStyle.color = 'black'
+    if(feedback) {
+      if(partialMatch) {
+        inputStyle.color = 'green'
+      } else {
+        inputStyle.color = 'red'
+      }
+      if(matches) {
+        inputStyle.backgroundColor = 'lightgreen'
+        inputStyle.color = 'black'
+      }
     }
     return <div className='small-12 columns'>
-      <strong>{word} {matches ? '✅' : '⛔️'}</strong>
+      <strong>{reverse ? vocab[word] : word} {feedback && (matches ? '✅' : '⛔️')}</strong>
       <br />
       <input type='text' value={text} onChange={e => setText(e.target.value)} style={inputStyle} />
-      <Hint word={word} />
+      {!reverse && <Hint word={word} />}
       <br />
       <br />
     </div>
@@ -98,14 +107,23 @@ published: true
   }
   function List() {
     const [keys, setKeys] = React.useState(shuffle(Object.keys(vocab)))
-    return <div className='row'>
-      <div className='small-12 columns'>
-        <h2>Firetek 096 Vocab Quiz (Fall 2025, LAVC)</h2>
+    const [feedback, setFeedback] = React.useState(true)
+    const [punctuation, setPunctuation] = React.useState(true)
+    const [reverse, setReverse] = React.useState(false)
+    const settingsValue = {feedback, punctuation, reverse}
+    return <SettingsContext.Provider value={settingsValue}>
+      <div className='row'>
+        <div className='small-12 columns'>
+          <h2>Firetek 096 Vocab Quiz (Fall 2025, LAVC)</h2>
+          <label>Feedback <input type='checkbox' checked={feedback} onChange={() => setFeedback(!feedback)} /></label>
+          <label>Verify punctuation <input type='checkbox' checked={punctuation} onChange={() => setPunctuation(!punctuation)} /></label>
+          <label>Reverse <input type='checkbox' checked={reverse} onChange={() => setReverse(!reverse)} /></label>
+        </div>
+        {keys.map(word =>
+          <Word key={word} word={word} />
+        )}
       </div>
-      {keys.map(word =>
-        <Word key={word} word={word} />
-      )}
-    </div>
+    </SettingsContext.Provider>
   }
   const root = ReactDOM.createRoot(document.getElementById('app'))
   root.render(<List />)
