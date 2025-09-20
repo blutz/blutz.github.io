@@ -1,0 +1,129 @@
+---
+title: "Firetek 096 Anatomy"
+slug: anatomy
+layout: empty
+published: true
+---
+
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<div id='app' style='padding-bottom: 75px'><div>
+
+<script type='text/babel'>
+  const quizzes = {
+    skeleton: [
+      {value: 'Skull', top: 197, left: 301, adjustRight: true},
+      {value: 'Mandible', top: 272, left: 298, adjustRight: true},
+      {value: 'Cervical vertebrae (7)', top: 331, left: 295, adjustRight: true},
+      {value: 'Manubrium', top: 424, left: 355, adjustRight: true},
+      {value: 'Thoracic vertebrae (12)', top: 516, left: 354, adjustRight: true},
+      {value: 'Floating rib', top: 575, left: 341, adjustRight: true},
+      {value: 'Lumbar Vertebrae (5)', top: 632, left: 320, adjustRight: true},
+      {value: 'Ilium', top: 711, left: 294, adjustRight: true},
+      {value: 'Sacrum (5)', top: 753, left: 289, adjustRight: true},
+      {value: 'Coccyx (4)', top: 790, left: 308, adjustRight: true},
+      {value: 'Head of Femur', top: 860, left: 311, adjustRight: true},
+      {value: 'Pubic symphysis', top: 1052, left: 306, adjustRight: true},
+      {value: 'Clavicle', top: 341, left: 797},
+      {value: 'Scapula', top: 398, left: 790},
+      {value: 'Body of Sternum', top: 474, left: 787},
+      {value: 'Xiphoid process', top: 509, left: 787},
+      {value: 'Ribs (24)', top: 552, left: 784},
+      {value: 'Humerus', top: 612, left: 785},
+      {value: 'Iliac crest', top: 660, left: 787},
+      {value: 'Radius', top: 704, left: 782},
+      {value: 'Ulna', top: 772, left: 781},
+      {value: 'Ischium', top: 820, left: 807},
+      {value: 'Carpals', top: 875, left: 896},
+      {value: 'Metacarpals', top: 919, left: 890},
+      {value: 'Phalanges', top: 960, left: 878},
+      {value: 'Femur', top: 1058, left: 778},
+      {value: 'Patella', top: 1129, left: 776},
+      {value: 'Tibia', top: 1253, left: 782},
+      {value: 'Fibula', top: 1326, left: 779},
+      {value: 'Calcaneus', top: 1379, left: 779},
+      {value: 'Tarsals', top: 1465, left: 790},
+      {value: 'Metatarsals', top: 1514, left: 785},
+      {value: 'Phalanges', top: 1555, left: 788},
+    ],
+    skull: [
+      {value: 'Frontal Bone', top: 276, left: 134},
+      {value: 'Parietal Bone', top: 336, left: 136},
+      {value: 'Nasal Bone', top: 408, left: 136},
+      {value: 'Mandible', top: 610, left: 135},
+      {value: 'Temporal Bone', top: 381, left: 769},
+      {value: 'Orbit Bones', top: 430, left: 764},
+      {value: 'Zygomatic Bone', top: 474, left: 754},
+      {value: 'Maxilla', top: 537, left: 749},
+      {value: 'Frontal Bone', top: 937, left: 141},
+      {value: 'Nasal Bone', top: 1061, left: 137},
+      {value: 'zygomatic Bone', top: 1113, left: 140},
+      {value: 'Maxilla', top: 1168, left: 138},
+      {value: 'Mandible', top: 1251, left: 134},
+      {value: 'Mental Foramen', top: 1295, left: 137},
+      {value: 'Parietal Bone', top: 886, left: 796},
+      {value: 'Temporal Bone', top: 1069, left: 850},
+      {value: 'Occipital Bone', top: 1127, left: 840},
+      {value: 'Mastoid Process', top: 1183, left: 805},
+    ],
+  }
+  function Input({word}) {
+    const [value, setValue] = React.useState('')
+    const baseStyle = {
+      position: 'absolute',
+      width: '150px',
+      border: '1px solid #1a547a',
+      height: '40px',
+    }
+    const leftAdjust = word.adjustRight ? -150 : 0
+    const style = {...baseStyle, top: `${word.top-20}px`, left: `${word.left+leftAdjust}px`}
+    const match = word.value.toLowerCase() === value.toLowerCase().trim()
+    if(match) {
+      style.backgroundColor = 'lightgreen'
+      style.color = 'green'
+      style.borderColor = 'green'
+    }
+    return <input style={style} type='text' value={value} onChange={e => setValue(e.target.value)} />
+  }
+  function Quiz({name}) {
+    const containerStyle = {
+      position: 'relative',
+      height: '1600px',
+      width: '1200px',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      backgroundImage: `url({{ site.url }}/img/anatomy/${name}-blank.jpg)`,
+      backgroundSize: 'cover',
+      marginBottom: '75px',
+      border: '1px solid #aaa',
+    }
+    // To help positioning elements
+    function handleClick(e) {
+      const left = (e.pageX - e.target.offsetLeft)
+      const top = (e.pageY - e.target.offsetTop)
+      console.log(`top: ${top}, left: ${left}`)
+    }
+    return <div style={containerStyle} onClick={handleClick}>
+      {quizzes[name].map((word, i) =>
+        <Input word={word} key={name + word.value + i} />
+      )}
+    </div>
+  }
+  function App() {
+    const quizNames = Object.keys(quizzes)
+    const [cur, setCur] = React.useState(quizNames[0])
+    const style={textAlign: 'center'}
+    return <div style={style}>
+      {quizNames.map(qn =>
+        <button key={qn} className={cur === qn ? 'primary' : 'secondary'} onClick={() => setCur(qn)}>{qn}</button>
+      )}
+      <br />
+      <a href={`{{site.url}}/img/anatomy/${cur}-filled.jpg`} target='_blank'>View key</a>
+      <Quiz name={cur} />
+    </div>
+  }
+  const root = ReactDOM.createRoot(document.getElementById('app'))
+  root.render(<App />)
+</script>
