@@ -1,0 +1,183 @@
+---
+title: "Firetek 096 Pharmacology"
+slug: pharmacology
+layout: empty
+published: true
+---
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<div id='app'><div>
+
+<script type='text/babel'>
+  const data = {
+    'Nitroglycerine': {
+      'classification': 'vasodilator',
+      'administration': '1 tablet (1/150 gr or 0.4mg SL). 1 spray (0.4mg SL or TM)',
+      'indications': 'chest pain',
+      'actions': 'dilates blood vessels/coronary arteries, decreases workload of heart',
+      'onset': '1-3 minutes; peaks in 5-10 minutes',
+      'duration': '30-60 minutes',
+      'adverse': 'hypotension, bradycardia, reflex tachycardia, hypertension, nausea/vomiting, dry mouth, throbbing headache, dizziness/fainting, confusion, blurred vision, flushed skin, sublingual burning',
+      'contra': 'BP below 100 systolic, pt. has taken 3 doses prior to EMS arrival, ED meds taken within 24-48 hours, head injury',
+      'reassessment': 'BP, pulse, respirations, auscultate lung sounds',
+    },
+    'Epinephrine Auto Injector': {
+      'classification': 'sympathomimetic agent',
+      'administration': '0.3mg. IM in the upper outer thigh. Pediatric 0.15mg. IM in the upper outer thigh',
+      'indications': 'anaphylaxis',
+      'actions': 'dilates bronchioles; constricts blood vessels',
+      'onset': '5-10 minutes',
+      'duration': '20 minutes',
+      'adverse': 'tachycardia, hypertension, chest pain, ventricular fibrillation, difficulty breathing, seizures, cerebral hemorrhage, headache, tremor, dizziness, anxiety, nausea, vomiting',
+      'contra': 'patient does not meet indication or criteria for administration',
+      'reassessment': 'BP, pulse, respirations, auscultate lung sounds',
+    },
+    'Bronchodilator Metered Dose Inhaler (MDI) Albuterol Sulfate': {
+      'classification': 'bronchodilator',
+      'administration': '1 spray inhaled using either MDI with or without spacer device; may repeat 1 spray in 3-5 minutes one time',
+      'indications': 'bronchospasm caused by acute asthma, COPD, bronchitis',
+      'actions': 'dilates bronchioles, reduces airway resistance',
+      'onset': 'within 5 minutes',
+      'duration': '4-6 hours',
+      'adverse': 'tachycardia, hypertension, cough, wheezing, tremors, nervousness, headache, dizziness, nausea',
+      'contra': 'maximum prescribed inhalation dose taken by pt., inhaler not prescribed for pt.',
+      'reassessment': 'BP, pulse, respirations, auscultate lung sounds',
+    },
+    'Naloxone Hydrochloride': {
+      'classification': 'opioid antagonist',
+      'administration': '2mg IM via auto-injector in the upper outer thigh or 2mg IN via atomizer (1mg in each nostril). No repeat administration',
+      'indications': 'suspected narcotic overdose with respiratory rate < 8/min. and/or decreased respiratory rate',
+      'actions': 'binds to opioid receptors & blocks the receptors preventing the body from responding to opiates & endorphins',
+      'onset': 'within 5 minutes',
+      'duration': '20-90 minutes',
+      'adverse': 'tachycardia/bradycardia, hypertension/hypotension, sudden chest pain, dysrhythmias, respiratory depression, pulmonary edema, seizure, headache, irritability/anxiety, tinnitus, nausea/vomiting, abdominal pain',
+      'contra': 'none',
+      'reassessment': 'BP, pulse, respirations, auscultate lung sounds',
+    },
+    'Acetylsalicylic Acid': {
+      'classification': 'anticoagulant, platelet inhibitor',
+      'administration': '4 (81mg tablets) Total 324mg PO chewed then swallowed',
+      'indications': 'chest pain of myocardial origin, prevents blood clot formation in arteries',
+      'actions': 'inhibits aggregation (clumping) of platelets; prolongs bleeding time',
+      'onset': 'within 5-10 minutes',
+      'duration': '24 hours',
+      'adverse': 'tinnitus, may exacerbate asthma, GI bleeding, nausea, abdominal pain',
+      'contra': 'allergy to aspirin or NSAIDs (non-steroidal anti-inflammatory drugs), GI bleed, history of ulcer disease',
+      'reassessment': 'BP, pulse, respirations, auscultate lung sounds',
+    },
+  }
+  const labels = {
+    'classification': 'Classification',
+    'administration': 'Administration (Dose)',
+    'indications': 'Indications',
+    'actions': 'Actions',
+    'onset': 'Onset',
+    'duration': 'Duration',
+    'adverse': 'Adverse Effects',
+    'contra': 'Contraindications',
+    'reassessment': 'Reassessment Includes',
+  }
+  // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+  // Shuffles in-place
+  function shuffle(array) {
+    let currentIndex = array.length;
+    while (currentIndex != 0) {
+      let randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    return array
+  }
+  function normalize(str, removePunctuation) {
+    const ret = str.toLowerCase().split(' ').join('')
+    if(removePunctuation) {
+      return ret.replace(/[^0-9A-Z]+/gi,'')
+    } else {
+      return ret
+    }
+  }
+  function Hint({text}) {
+    const [words, setWords] = React.useState(0)
+    const limit = React.useMemo(() => {
+      return text.split(' ').length
+    }, [text])
+    const hint = React.useMemo(() => {
+      return text.split(' ').slice(0, words).join(' ')
+    }, [text, words])
+    function handleClick(e) {
+      e.preventDefault()
+      if(words < limit) {
+        setWords(words+1)
+      }
+    }
+    return <span>
+      &nbsp;<a onClick={handleClick}>{words === limit ? '📚' : 'Hint'}</a>&nbsp;{hint}
+    </span>
+  }
+  function Match({label, solution}) {
+    const hintRef = React.useRef(null)
+    const [text, setText] = React.useState('')
+    const [matches, partialMatch] = React.useMemo(() => {
+      const normalizedSolution = normalize(solution)
+      const normalizedText = normalize(text)
+      return [
+        normalizedSolution === normalizedText,
+        normalizedText === normalizedSolution.substring(0, normalizedText.length)
+      ]
+    }, [text, solution])
+    const inputStyle = {marginBottom: 0}
+    if(partialMatch) {
+      inputStyle.color = 'green'
+    } else {
+      inputStyle.color = 'red'
+    }
+    if(matches) {
+      inputStyle.backgroundColor = 'lightgreen'
+      inputStyle.color = 'black'
+    }
+    function handleChange(newVal) {
+      if(newVal[newVal.length-1] === '?') {
+        if(hintRef.current) {
+          // Yeah this is hacky. I don't care since this is a one-off.
+          hintRef.current.querySelector('a').click()
+        }
+        setText(text)
+      } else {
+        setText(newVal)
+      }
+    }
+    return <li>
+      <strong>{label}</strong>
+      <span ref={hintRef}><Hint text={solution} /></span>
+      <input type='text' value={text} onChange={e => handleChange(e.target.value)} style={inputStyle} />
+    </li>
+  }
+  function Drug({name}) {
+    const d = data[name]
+    const keys = Object.keys(d)
+    return <div>
+      <h3>{name}</h3>
+      <ul>
+        {keys.map(k =>
+          <Match key={k} label={labels[k]} solution={d[k]} />
+        )}
+      </ul>
+      <hr />
+    </div>
+  }
+  function Quiz() {
+    const drugs = shuffle(Object.keys(data))
+    return <div className='row'>
+      <div className='small-12 columns'>
+        <h2>Firetek 096 Pharmacology Quiz (Fall 2025, LAVC)</h2>
+        <div><em>Type <strong>?</strong> for the next hint</em></div>
+        {drugs.map(d => <Drug key={d} name={d} />)}
+      </div>
+    </div>
+  }
+  const root = ReactDOM.createRoot(document.getElementById('app'))
+  root.render(<Quiz />)
+</script>
