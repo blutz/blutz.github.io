@@ -79,6 +79,7 @@ published: true
     'contra': 'Contraindications',
     'reassessment': 'Reassessment Includes',
   }
+  const SettingsContext = React.createContext(null)
   // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
   // Shuffles in-place
   function shuffle(array) {
@@ -118,8 +119,10 @@ published: true
     </span>
   }
   function Match({label, solution}) {
+    const {feedback} = React.useContext(SettingsContext)
     const hintRef = React.useRef(null)
     const [text, setText] = React.useState('')
+    const [focus, setFocus] = React.useState(false)
     const [matches, partialMatch] = React.useMemo(() => {
       const normalizedSolution = normalize(solution)
       const normalizedText = normalize(text)
@@ -129,14 +132,16 @@ published: true
       ]
     }, [text, solution])
     const inputStyle = {marginBottom: 0}
-    if(partialMatch) {
-      inputStyle.color = 'green'
-    } else {
-      inputStyle.color = 'red'
-    }
-    if(matches) {
-      inputStyle.backgroundColor = 'lightgreen'
-      inputStyle.color = 'black'
+    if(feedback !== 'off' && !(feedback === 'delay' && focus)) {
+      if(partialMatch) {
+        inputStyle.color = 'green'
+      } else {
+        inputStyle.color = 'red'
+      }
+      if(matches) {
+        inputStyle.backgroundColor = 'lightgreen'
+        inputStyle.color = 'black'
+      }
     }
     function handleChange(newVal) {
       if(newVal[newVal.length-1] === '?') {
@@ -152,7 +157,7 @@ published: true
     return <li>
       <strong>{label}</strong>
       <span ref={hintRef}><Hint text={solution} /></span>
-      <input type='text' value={text} onChange={e => handleChange(e.target.value)} style={inputStyle} />
+      <input type='text' value={text} onChange={e => handleChange(e.target.value)} style={inputStyle} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)} />
     </li>
   }
   function Drug({name}) {
@@ -169,13 +174,25 @@ published: true
     </div>
   }
   function Quiz() {
-    const drugs = shuffle(Object.keys(data))
+    const drugs = React.useMemo(() => shuffle(Object.keys(data)), [])
+    const [feedback, setFeedback] = React.useState('on') // on/delay/off
+    const settingsValue = {feedback}
+    const selectStyle={width: 'auto', margin: '0 10px', minWidth: '100px'}
     return <div className='row'>
-      <div className='small-12 columns'>
-        <h2>Firetek 096 Pharmacology Quiz (Fall 2025, LAVC)</h2>
-        <div><em>Type <strong>?</strong> for the next hint</em></div>
-        {drugs.map(d => <Drug key={d} name={d} />)}
-      </div>
+      <SettingsContext.Provider value={settingsValue}>
+        <div className='small-12 columns'>
+          <h2>Firetek 096 Pharmacology Quiz (Fall 2025, LAVC)</h2>
+          <div><em>Type <strong>?</strong> for the next hint</em></div>
+          <label>Feedback
+            <select value={feedback} onChange={e => setFeedback(e.target.value)} style={selectStyle}>
+              <option value='on'>On</option>
+              <option value='delay'>Delay</option>
+              <option value='off'>Off</option>
+            </select>
+          </label>
+          {drugs.map(d => <Drug key={d} name={d} />)}
+        </div>
+      </SettingsContext.Provider>
     </div>
   }
   const root = ReactDOM.createRoot(document.getElementById('app'))
