@@ -4,3 +4,6 @@ description: ""
 url: "//blutz.me"
 
 permalink: pretty
+
+plugins:
+  - jekyll-redirect-from
